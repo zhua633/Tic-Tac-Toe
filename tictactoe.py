@@ -3,10 +3,19 @@ Tic Tac Toe Player
 """
 
 import math
+import pygame
+from globalvar import *
+dis
+
 
 X = "X"
 O = "O"
 EMPTY = None
+
+# Colors
+white=(255,255,255)
+turn="X"
+
 
 def empty(board):
     """
@@ -22,6 +31,26 @@ def empty(board):
                 elements+=1
 
     return elements
+
+def draw_x(board,i,j):
+    centerX = j * 80 + 180+40
+    centerY = i * 80 + 80+40
+    pygame.draw.line (dis, white, (centerX - 22, centerY - 22),
+        (centerX + 22, centerY + 22), 2)
+
+    pygame.draw.line (dis, white, (centerX + 22, centerY - 22),
+        (centerX - 22, centerY + 22), 2)
+    board[i][j]=player
+    print("player is this")
+    print(player)
+
+
+def draw_o(board,i,j):
+    centerX = j * 100 + 50
+    centerY = i * 100 + 50
+    pygame.draw.circle (dis, white, (centerX, centerY), 44, 2)
+    board[i][j]=player
+
 
 def initial_state():
     """
@@ -41,13 +70,15 @@ def player(board):
 
     elements=empty(board)
 
-    print("elements returns this: ")
-    print(elements)
+    #print("elements returns this: ")
+    #print(elements)
 
     #if the board is empty, X gets the first move. Or if there is even number on board.
     if elements==0 or (len(elements) %2)==1:
+        player="X"
         return X
     else:
+        player="O"
         return O
 
 
@@ -62,14 +93,26 @@ def actions(board):
     #if ((board[i][j] == "X") or (board[i][j] == "O")):
     #    return act
 
-    return act
+    return act[1]
 
 
 
 def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
+    If the grid is not already occupied, draw x or o at action.
     """
+    i=action[0]
+    j=action[1]
+
+
+    if ((board[i][j] != "X") and (board[i][j] != "O")):
+        print("=turn returns this: ")
+        print(turn)
+        if (turn=="X"):
+            draw_x(board,i,j)
+        elif (turn=="O"):
+            draw_o(board,i,j)
     return board
 
 def winner(board):
