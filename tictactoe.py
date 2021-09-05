@@ -5,7 +5,7 @@ Tic Tac Toe Player
 import math
 import pygame
 from globalvar import *
-dis
+dis, turn
 
 
 X = "X"
@@ -14,8 +14,6 @@ EMPTY = None
 
 # Colors
 white=(255,255,255)
-turn="X"
-
 
 def empty(board):
     """
@@ -40,16 +38,16 @@ def draw_x(board,i,j):
 
     pygame.draw.line (dis, white, (centerX + 22, centerY - 22),
         (centerX - 22, centerY + 22), 2)
-    board[i][j]=player
+    board[i][j]=turn
     print("player is this")
-    print(player)
+    print(board[i][j])
 
 
 def draw_o(board,i,j):
     centerX = j * 100 + 50
     centerY = i * 100 + 50
     pygame.draw.circle (dis, white, (centerX, centerY), 44, 2)
-    board[i][j]=player
+    board[i][j]=turn
 
 
 def initial_state():
@@ -62,27 +60,37 @@ def initial_state():
             
 
 
+def this_player(board):
+    """
+    Returns player who has the next turn on a board.
+    """
+    #Return the number of non zero elements
+    elements=empty(board)
+
+    #if the board is empty, X gets the first move. Or if there is even number on board.
+    if (elements %2)==0:
+        turn="X"
+    else:
+        turn="O"
+
+    return turn
+
 def player(board):
     """
     Returns player who has the next turn on a board.
     """
-    #Return the non zero elements
-
+    #Return the number of non zero elements
     elements=empty(board)
 
-    #print("elements returns this: ")
-    #print(elements)
-
     #if the board is empty, X gets the first move. Or if there is even number on board.
-    if elements==0 or (len(elements) %2)==1:
-        player="X"
-        return X
+    if (elements %2)==0:
+        turn="O"
     else:
-        player="O"
-        return O
+        turn="X"
 
+    return turn
 
-def actions(board):
+def actions():
     """
     Returns set of all possible actions (i, j) available on the board.
     """
@@ -92,8 +100,8 @@ def actions(board):
 
     #if ((board[i][j] == "X") or (board[i][j] == "O")):
     #    return act
-
-    return act[1]
+    print(act)
+    return act
 
 
 
@@ -105,6 +113,7 @@ def result(board, action):
     i=action[0]
     j=action[1]
 
+    turn=this_player(board)
 
     if ((board[i][j] != "X") and (board[i][j] != "O")):
         print("=turn returns this: ")
@@ -113,28 +122,56 @@ def result(board, action):
             draw_x(board,i,j)
         elif (turn=="O"):
             draw_o(board,i,j)
+            
+    turn=player(board)
+
     return board
 
 def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    return X
+    
+    victory = [
+        [board[0][0], board[0][1], board[0][2]],
+        [board[1][0], board[1][1], board[1][2]],
+        [board[2][0], board[2][1], board[2][2]],
+        [board[0][0], board[1][0], board[2][0]],
+        [board[0][1], board[1][1], board[2][1]],
+        [board[0][2], board[1][2], board[2][2]],
+        [board[0][0], board[1][1], board[2][2]],
+        [board[2][0], board[1][1], board[0][2]],
+    ]
+
+    if [turn,turn,turn] in victory:
+        return turn
+    else:
+        return None
 
 def terminal(board):
     """
-    Returns True if game is over, False otherwise.
+    Returns True if game is over(there is a winner or the board is full), False otherwise.
     """
+    isFull=empty(board)
+
+    if winner(board) !=None or isFull==9:
+        return True
+
     return False
 
 def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
+    if winner(board) !=None:
+        if winner(board)==X:
+            return 1
+        elif winner(board)==O:
+            return -1
     return 0
 
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    return True
+    return (2,2)
