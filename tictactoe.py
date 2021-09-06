@@ -5,14 +5,14 @@ Tic Tac Toe Player
 import math
 import copy
 import pygame
-from globalvar import *
-dis, turn
+
 
 
 X = "X"
 O = "O"
 EMPTY = None
-best_move=()
+
+turn="X"
 
 # Colors
 white=(255,255,255)
@@ -68,8 +68,6 @@ def actions(board):
             if board[i][j] == EMPTY:
                 act.add((i, j))
 
-    print("act is this: ")
-    print(act)
     return act
 
 
@@ -81,19 +79,19 @@ def result(board, action):
     """
     #make a deep copy of the board
     state=copy.deepcopy(board)
-    i=action[0]
-    j=action[1]
+
+    if action not in actions(board):
+        raise Exception("Invalid action")
+    
+    i,j=action
 
     turn=player(state)
 
     if ((state[i][j] != "X") and (state[i][j] != "O")):
-        print("=turn returns this: ")
-        print(turn)
+        state[i][j]=turn
         if (turn=="X"):
-            state[i][j]=turn
             turn=O
         elif (turn=="O"):
-            state[i][j]=turn
             turn=X
             
     return state
@@ -114,8 +112,10 @@ def winner(board):
         [board[2][0], board[1][1], board[0][2]]
     ]
 
-    if [turn,turn,turn] in victory:
-        return turn
+    if [X,X,X] in victory:
+        return X
+    elif [O,O,O] in victory:
+        return O
     else:
         return None
 
@@ -141,66 +141,50 @@ def utility(board):
             return -1
     return 0
 
+
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-
     if terminal(board):
         return None
     
-    
     if player(board)==X:
-        max=max_val(board)
-        print("max value is")
-        print(max)
-    elif player(board)==O:
-        min=min_val(board)
-        print("min value is")
-        print(min)
-    
-    #(3,3) is the default to get stored actions
-    best=get_best((3,3))
-    print(best)
+        return max_val(board,-math.inf,math.inf)[1]
 
-    return best
+    else:
+        return min_val(board,-math.inf,math.inf)[1]
 
-def max_val(state):
-    v=float('-inf')
+def max_val(state,alpha,beta):
+    best_move=()
     if terminal(state):
-        return utility(state)
-    for action in actions(state):
-        min=min_val(result(state,action))
-        print("min is this")
-        print(min)
-        if min==None:
-            return v
-        v=max(v,min)
-        print("v is this:")
-        print(v)
-        if v==1:
-            get_best(action)
-            print("returning v")
-            return v
+        return utility(state),best_move
+    else:
+        v= -math.inf
+        for action in actions(state):
+            test=min_val(result(state,action),alpha,beta)[0]
+            if test>v:
+                v=test
+                best_move=action 
+            alpha=max(alpha,v)
+            if (beta<=alpha):
+                break
+        return v, best_move
 
 
-def min_val(state):
-    v=float('inf')
+def min_val(state,alpha,beta):
+    best_move=()
     if terminal(state):
-        return utility(state)
-    for action in actions(state):
-        max=max_val(result(state,action))
-        if max==None:
-            return v
-        v=min(v,max)        
-        print("min v is this:")
-        print(v)
-        if max==-1:
-            get_best(action)
-            return v
+        return utility(state),best_move
+    else:
+        v=math.inf
+        for action in actions(state):
+            test=max_val(result(state,action),alpha,beta)[0]
+            if test<v:
+                v=test
+                best_move=action 
+            beta=min(beta,v)
+            if beta<=alpha:
+                break
+        return v, best_move
 
-def get_best(action):
-    if action !=(3,3):
-        global best_move
-        best_move=action 
-    return best_move

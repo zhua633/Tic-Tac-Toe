@@ -1,9 +1,6 @@
 import pygame
 import sys
 import time
-from globalvar import* 
-size,dis
-
 import tictactoe as ttt
 
 pygame.init()
@@ -11,7 +8,8 @@ pygame.init()
 # Colors
 black = (0, 0, 0)
 white = (255, 255, 255)
-
+size = width, height = 600, 400
+dis=pygame.display.set_mode(size)
 screen = dis
 
 mediumFont = pygame.font.Font("OpenSans-Regular.ttf", 28)
